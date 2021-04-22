@@ -4,8 +4,28 @@
 ##    PARSE ARGS
 ##########################
 RUNUSER="caesar"
-INPUTFILE=""
+
+# - CAESAR OPTIONS
 JOB_ARGS=""
+INPUTFILE=""
+SAVE_REGIONS=""
+SAVE_BKGMAP=""
+SAVE_RMSMAP=""
+SAVE_ZMAP=""
+SAVE_RESMAP=""
+GLOBAL_BKG=""
+BKG_ESTIMATOR=""
+BKG_BOXPIX=""
+BKG_BOX=""
+BKG_GRID=""
+
+NPIX_MIN=""
+SEED_THR=""
+MERGE_THR=""
+NITERS=""
+SEED_THR_STEP=""
+
+# - RCLONE OPTIONS
 MOUNT_RCLONE_VOLUME=0
 MOUNT_VOLUME_PATH="/mnt/storage"
 RCLONE_REMOTE_STORAGE="neanias-nextcloud"
@@ -20,11 +40,85 @@ do
 		--runuser=*)
     	RUNUSER=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
+		--jobargs=*)
+    	JOB_ARGS=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+    ;;
 		--inputfile=*)
     	INPUTFILE=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
-		--jobargs=*)
-    	JOB_ARGS=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+		--save-regions=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$OPTVAL" = "1" ] ; then
+				SAVE_REGIONS="--save-regions"
+			fi
+    ;;
+		--save-bkgmap=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$OPTVAL" = "1" ] ; then
+				SAVE_BKGMAP="--save-bkgmap"
+			fi
+    ;;
+		--save-rmsmap=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$OPTVAL" = "1" ] ; then
+				SAVE_RMSMAP="--save-rmsmap"
+			fi
+    ;;
+		--save-significancemap=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$OPTVAL" = "1" ] ; then
+				SAVE_ZMAP="--save-significancemap"
+			fi
+    ;;
+		--save-residualmap=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$OPTVAL" = "1" ] ; then
+				SAVE_RESMAP="--save-residualmap"
+			fi
+    ;;
+		--globalbkg=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$OPTVAL" = "1" ] ; then
+				GLOBALBKG="--globalbkg"
+			fi
+    ;;
+		--bkgestimator=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			BKG_ESTIMATOR="--bkgestimator=$OPTVAL"
+    ;;
+		--bkgboxpix=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$OPTVAL" = "1" ] ; then
+				BKG_BOXPIX="--bkgboxpix"
+			fi
+    ;;
+		--bkgbox=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			BKG_BOX="--bkgbox=$OPTVAL"
+    ;;
+		--bkggrid=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			BKG_GRID="--bkggrid=$OPTVAL"
+    ;;
+		--npixmin=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			NPIX_MIN="--npixmin=$OPTVAL"
+    ;;
+		--seedthr=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			SEED_THR="--seedthr=$OPTVAL"
+    ;;
+		--mergethr=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			MERGE_THR="--mergethr=$OPTVAL"
+    ;;
+		--compactsearchiters=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			NITERS="--compactsearchiters=$OPTVAL"
+    ;;
+		--seedthrstep=*)
+    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			SEED_THR_STEP="--seedthrstep=$OPTVAL"
     ;;
 
 		--mount-rclone-volume=*)
@@ -51,11 +145,23 @@ do
 	esac
 done
 
-if [ "$INPUTFILE" = "" ]; then
-  echo "ERROR: Empty INPUTFILE argument (hint: you must specify an input file path)!"
-  exit 1
-fi
 
+# - Set options
+DATA_OPTIONS="--inputfile=$INPUTFILE "
+RUN_OPTIONS="--run --no-logredir "
+SAVE_OPTIONS="$SAVE_REGIONS $SAVE_BKGMAP $SAVE_RMSMAP $SAVE_ZMAP $SAVE_RESMAP "
+BKG_OPTIONS="$GLOBALBKG $BKG_ESTIMATOR $BKG_BOXPIX $BKG_BOX $BKG_GRID "
+SFINDER_OPTIONS="$NPIX_MIN $SEED_THR $MERGE_THR $NITERS $SEED_THR_STEP "
+
+if [ "$JOB_ARGS" = "" ]; then
+	if [ "$INPUTFILE" = "" ]; then
+	  echo "ERROR: Empty INPUTFILE argument (hint: you must specify an input file path)!"
+	  exit 1
+	fi
+	JOB_OPTIONS="$RUN_OPTIONS $DATA_OPTIONS $SAVE_OPTIONS $BKG_OPTIONS $SFINDER_OPTIONS "
+else
+	JOB_OPTIONS="$RUN_OPTIONS $JOB_ARGS " 
+fi
 
 ###############################
 ##    MOUNT VOLUMES
@@ -107,9 +213,9 @@ fi
 ###############################
 # - Define run command & args
 EXE="/opt/Software/caesar/install/scripts/SFinderSubmitter.sh"
-ARGS="--inputfile=$INPUTFILE --run --no-logredir $JOB_ARGS"
+CMD="runuser -l $RUNUSER -g $RUNUSER -c'""$EXE $JOB_OPTIONS""'"
 
 # - Run job
-echo "INFO: Running job command: $EXE $ARGS ..."
-eval "$EXE $ARGS"
+echo "INFO: Running job command: $CMD ..."
+eval "$CMD"
 
