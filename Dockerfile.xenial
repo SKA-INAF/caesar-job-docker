@@ -108,8 +108,7 @@ COPY run_job.sh /home/$USER/run_job.sh
 RUN chmod +x /home/$USER/run_job.sh
 
 # - Run container
-CMD ["/home/$USER/run_job.sh --runuser=$USER --jobargs=$JOB_OPTIONS --inputfile=$INPUTFILE --save-regions=$SAVE_REGIONS --save-bkgmap=$SAVE_BKGMAP --save-rmsmap=$SAVE_RMSMAP --save-significancemap=$SAVE_ZMAP --globalbkg=$GLOBALBKG --bkgestimator=$BKG_ESTIMATOR --bkgboxpix=$BKG_BOXPIX --bkgbox=$BKG_BOX --bkggrid=$BKG_GRID --npixmin=$NPIX_MIN --seedthr=$SEED_THR --mergethr=$MERGE_THR --compactsearchiters=$NITERS --seedthrstep=$SEED_THR_STEP --mount-rclone-volume=$MOUNT_RCLONE_VOLUME --mount-volume-path=$MOUNT_VOLUME_PATH --rclone-remote-storage=$RCLONE_REMOTE_STORAGE --rclone-remote-storage-path=$RCLONE_REMOTE_STORAGE_PATH --rclone-mount-wait=$RCLONE_MOUNT_WAIT_TIME"]
-
+CMD ["/home/$USER/run_job.sh --runuser=$USER --jobargs=""'"$JOB_OPTIONS"'"" --inputfile=$INPUTFILE --save-regions=$SAVE_REGIONS --save-bkgmap=$SAVE_BKGMAP --save-rmsmap=$SAVE_RMSMAP --save-significancemap=$SAVE_ZMAP --globalbkg=$GLOBALBKG --bkgestimator=$BKG_ESTIMATOR --bkgboxpix=$BKG_BOXPIX --bkgbox=$BKG_BOX --bkggrid=$BKG_GRID --npixmin=$NPIX_MIN --seedthr=$SEED_THR --mergethr=$MERGE_THR --compactsearchiters=$NITERS --seedthrstep=$SEED_THR_STEP --mount-rclone-volume=$MOUNT_RCLONE_VOLUME --mount-volume-path=$MOUNT_VOLUME_PATH --rclone-remote-storage=$RCLONE_REMOTE_STORAGE --rclone-remote-storage-path=$RCLONE_REMOTE_STORAGE_PATH --rclone-mount-wait=$RCLONE_MOUNT_WAIT_TIME"]
 
 
 
