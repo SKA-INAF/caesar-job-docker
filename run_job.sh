@@ -41,7 +41,8 @@ do
     	RUNUSER=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
 		--jobargs=*)
-    	JOB_ARGS=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+    	JOB_ARGS=`echo "$item" | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			#echo "JOB_ARGS: $JOB_ARGS"
     ;;
 		--inputfile=*)
     	INPUTFILE=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
