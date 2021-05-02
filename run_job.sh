@@ -6,6 +6,7 @@
 RUNUSER="caesar"
 
 # - CAESAR OPTIONS
+JOB_OUTDIR=""
 JOB_ARGS=""
 INPUTFILE=""
 SAVE_REGIONS=""
@@ -39,6 +40,9 @@ do
 	case $item in
 		--runuser=*)
     	RUNUSER=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+    ;;
+		--joboutdir=*)
+    	JOB_OUTDIR=`echo "$item" | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
 		--jobargs=*)
     	JOB_ARGS=`echo "$item" | /bin/sed 's/[-a-zA-Z0-9]*=//'`
@@ -149,10 +153,14 @@ done
 
 # - Set options
 DATA_OPTIONS="--inputfile=$INPUTFILE "
-RUN_OPTIONS="--run --no-logredir "
+RUN_OPTIONS="--run --no-logredir --jobdir=/home/$RUNUSER/caesar-job "
+if [ "$JOB_OUTDIR" != "" ]; then
+	RUN_OPTIONS="$RUN_OPTIONS --outdir=$JOB_OUTDIR "
+fi
 SAVE_OPTIONS="$SAVE_REGIONS $SAVE_BKGMAP $SAVE_RMSMAP $SAVE_ZMAP $SAVE_RESMAP "
 BKG_OPTIONS="$GLOBALBKG $BKG_ESTIMATOR $BKG_BOXPIX $BKG_BOX $BKG_GRID "
 SFINDER_OPTIONS="$NPIX_MIN $SEED_THR $MERGE_THR $NITERS $SEED_THR_STEP "
+
 
 if [ "$JOB_ARGS" = "" ]; then
 	if [ "$INPUTFILE" = "" ]; then
