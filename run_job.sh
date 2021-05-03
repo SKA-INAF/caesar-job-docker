@@ -216,6 +216,10 @@ if [ "$MOUNT_RCLONE_VOLUME" = "1" ] ; then
 	mkdir -p 	$MOUNT_VOLUME_PATH/jobs
 	mkdir -p 	$MOUNT_VOLUME_PATH/data
 
+	# - Create job output directory
+	echo "INFO: Creating job output directory $JOB_OUTDIR ..."
+	mkdir -p $JOB_OUTDIR
+
 fi
 
 
