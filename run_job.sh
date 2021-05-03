@@ -227,7 +227,8 @@ fi
 ##    RUN CAESAR JOB
 ###############################
 # - Define run command & args
-EXE="/opt/Software/caesar/install/scripts/SFinderSubmitter.sh"
+##EXE="/opt/Software/caesar/install/scripts/SFinderSubmitter.sh"
+EXE="/home/$RUNUSER/submitter.sh"
 CMD="runuser -l $RUNUSER -g $RUNUSER -c'""$EXE $JOB_OPTIONS""'"
 
 # - Run job
