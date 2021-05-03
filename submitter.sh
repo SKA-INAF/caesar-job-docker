@@ -1736,63 +1736,75 @@ generate_exec_script(){
       	echo "if [ -e "'$JOBDIR'"/$outputfile ] ; then" 
 				echo '  echo "Copying ROOT output file to $JOBOUTDIR"'
 				echo "  cp "'$JOBDIR'"/$outputfile "'$JOBOUTDIR'
+				echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
         echo "if [ -e "'$JOBDIR'"/$catalog_file ] ; then" 
 				echo '  echo "Copying ascii island catalog output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$catalog_file "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
         echo "if [ -e "'$JOBDIR'"/$catalog_fitcomp_file ] ; then" 
 				echo '  echo "Copying ascii component catalog output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$catalog_fitcomp_file "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
         echo "if [ -e "'$JOBDIR'"/$ds9region_file ] ; then" 
 				echo '  echo "Copying ds9 island region output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$ds9region_file "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
         echo "if [ -e "'$JOBDIR'"/$ds9fitregion_file ] ; then" 
 				echo '  echo "Copying ds9 component region output file to $JOBOUTDIR"'
-        echo "  cp "'$JOBDIR'"/$ds9fitregion_file "'$JOBOUTDIR'
+        echo "  cp "'$JOBDIR'"/$ds9fitregion_file "'$JOBOUTDIR' 
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
         echo "if [ -e "'$JOBDIR'"/$outputfile_res ] ; then" 
 				echo '  echo "Copying residual map output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$outputfile_res "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
 				echo "if [ -e "'$JOBDIR'"/$outputfile_saliency ] ; then" 
 				echo '  echo "Copying saliency map output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$outputfile_saliency "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
 				echo "if [ -e "'$JOBDIR'"/$outputfile_bkg ] ; then" 
 				echo '  echo "Copying bkg map output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$outputfile_bkg "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
 				echo "if [ -e "'$JOBDIR'"/$outputfile_rms ] ; then" 
 				echo '  echo "Copying noise map output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$outputfile_rms "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
 				echo "if [ -e "'$JOBDIR'"/$outputfile_zmap ] ; then" 
 				echo '  echo "Copying significance map output file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$outputfile_zmap "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
 				# - Copy config file
 				echo "if [ -e "'$JOBDIR'"/$configfile ] ; then" 
 				echo '  echo "Copying config file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$configfile "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 	
 				# - Copy script file
 				echo "if [ -e "'$JOBDIR'"/$shfile ] ; then" 
 				echo '  echo "Copying runscript file to $JOBOUTDIR"'
         echo "  cp "'$JOBDIR'"/$shfile "'$JOBOUTDIR'
+        echo '  ls -ltr $JOBOUTDIR'
 				echo "fi"
 
 				# - Copy log file
@@ -1800,6 +1812,7 @@ generate_exec_script(){
            echo "if [ -e "'$JOBDIR'"/$logfile ] ; then" 
 				   echo '  echo "Copying log file to $JOBOUTDIR"'
            echo "  cp "'$JOBDIR'"/$logfile "'$JOBOUTDIR'
+           echo '  ls -ltr $JOBOUTDIR'
 				   echo "fi"
         fi
 
