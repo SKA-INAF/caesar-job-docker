@@ -151,27 +151,6 @@ do
 done
 
 
-# - Set options
-DATA_OPTIONS="--inputfile=$INPUTFILE "
-RUN_OPTIONS="--run --no-logredir --jobdir=/home/$RUNUSER/caesar-job "
-if [ "$JOB_OUTDIR" != "" ]; then
-	RUN_OPTIONS="$RUN_OPTIONS --outdir=$JOB_OUTDIR "
-fi
-SAVE_OPTIONS="$SAVE_REGIONS $SAVE_BKGMAP $SAVE_RMSMAP $SAVE_ZMAP $SAVE_RESMAP "
-BKG_OPTIONS="$GLOBALBKG $BKG_ESTIMATOR $BKG_BOXPIX $BKG_BOX $BKG_GRID "
-SFINDER_OPTIONS="$NPIX_MIN $SEED_THR $MERGE_THR $NITERS $SEED_THR_STEP "
-
-
-if [ "$JOB_ARGS" = "" ]; then
-	if [ "$INPUTFILE" = "" ]; then
-	  echo "ERROR: Empty INPUTFILE argument (hint: you must specify an input file path)!"
-	  exit 1
-	fi
-	JOB_OPTIONS="$RUN_OPTIONS $DATA_OPTIONS $SAVE_OPTIONS $BKG_OPTIONS $SFINDER_OPTIONS "
-else
-	JOB_OPTIONS="$RUN_OPTIONS $JOB_ARGS " 
-fi
-
 
 
 ###############################
@@ -222,18 +201,45 @@ if [ "$MOUNT_RCLONE_VOLUME" = "1" ] ; then
 
 fi
 
-
 # - Copy dummy file to JOB_OUTDIR
-touch /home/$RUNUSER/README.txt
-echo "INFO: Copying dummy file to $JOB_OUTDIR ..."
-cp /home/$RUNUSER/README.txt $JOB_OUTDIR
+#touch /home/$RUNUSER/README.txt
+#echo "INFO: Copying dummy file to $JOB_OUTDIR ..."
+#cp /home/$RUNUSER/README.txt $JOB_OUTDIR
+
+###############################
+##    SET OPTIONS
+###############################
+DATA_OPTIONS="--inputfile=$INPUTFILE "
+RUN_OPTIONS="--run --no-logredir --jobdir=/home/$RUNUSER/caesar-job "
+if [ "$JOB_OUTDIR" != "" ]; then
+	RUN_OPTIONS="$RUN_OPTIONS --outdir=$JOB_OUTDIR "
+	if [ "$MOUNT_RCLONE_VOLUME" = "1" ] ; then
+		RUN_OPTIONS="$RUN_OPTIONS --waitcopy --copywaittime=$RCLONE_MOUNT_WAIT_TIME "
+	fi	
+fi
+SAVE_OPTIONS="$SAVE_REGIONS $SAVE_BKGMAP $SAVE_RMSMAP $SAVE_ZMAP $SAVE_RESMAP "
+BKG_OPTIONS="$GLOBALBKG $BKG_ESTIMATOR $BKG_BOXPIX $BKG_BOX $BKG_GRID "
+SFINDER_OPTIONS="$NPIX_MIN $SEED_THR $MERGE_THR $NITERS $SEED_THR_STEP "
+
+
+if [ "$JOB_ARGS" = "" ]; then
+	if [ "$INPUTFILE" = "" ]; then
+	  echo "ERROR: Empty INPUTFILE argument (hint: you must specify an input file path)!"
+	  exit 1
+	fi
+	JOB_OPTIONS="$RUN_OPTIONS $DATA_OPTIONS $SAVE_OPTIONS $BKG_OPTIONS $SFINDER_OPTIONS "
+else
+	JOB_OPTIONS="$RUN_OPTIONS $JOB_ARGS " 
+fi
+
+
 
 ###############################
 ##    RUN CAESAR JOB
 ###############################
 # - Define run command & args
-##EXE="/opt/Software/caesar/install/scripts/SFinderSubmitter.sh"
-EXE="/home/$RUNUSER/submitter.sh"
+EXE="/opt/Software/caesar/install/scripts/SFinderSubmitter.sh"
+##EXE="/home/$RUNUSER/submitter.sh"
 CMD="runuser -l $RUNUSER -g $RUNUSER -c'""$EXE $JOB_OPTIONS""'"
 
 # - Run job
