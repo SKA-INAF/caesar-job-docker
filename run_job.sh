@@ -213,15 +213,20 @@ if [ "$MOUNT_RCLONE_VOLUME" = "1" ] ; then
 
 	# - Create job & data directories
 	echo "INFO: Creating job & data directories ..."
-	mkdir -p 	$MOUNT_VOLUME_PATH/jobs
-	mkdir -p 	$MOUNT_VOLUME_PATH/data
+	mkdir -p $MOUNT_VOLUME_PATH/jobs
+	mkdir -p $MOUNT_VOLUME_PATH/data
 
 	# - Create job output directory
-	echo "INFO: Creating job output directory $JOB_OUTDIR ..."
-	mkdir -p $JOB_OUTDIR
+	#echo "INFO: Creating job output directory $JOB_OUTDIR ..."
+	#mkdir -p $JOB_OUTDIR
 
 fi
 
+
+# - Copy dummy file to JOB_OUTDIR
+touch /home/$RUNUSER/README.txt
+echo "INFO: Copying dummy file to $JOB_OUTDIR ..."
+cp /home/$RUNUSER/README.txt $JOB_OUTDIR
 
 ###############################
 ##    RUN CAESAR JOB
