@@ -1819,6 +1819,10 @@ generate_exec_script(){
 				# - Show output directory
 				echo 'echo "INFO: Show files in $JOBOUTDIR ..."'
 				echo 'ls -ltr $JOBOUTDIR'
+
+				# - Sleep a bit
+				echo 'sleep 30'				
+
 			fi
 
       echo " "
