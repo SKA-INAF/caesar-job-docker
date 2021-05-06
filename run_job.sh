@@ -210,7 +210,7 @@ fi
 ##    SET OPTIONS
 ###############################
 DATA_OPTIONS="--inputfile=$INPUTFILE "
-RUN_OPTIONS="--run --no-logredir --jobdir=/home/$RUNUSER/caesar-job "
+RUN_OPTIONS="--run --no-logredir --jobdir=/home/$RUNUSER/caesar-job --save-summaryplot --save-catalog-to-json "
 if [ "$JOB_OUTDIR" != "" ]; then
 	RUN_OPTIONS="$RUN_OPTIONS --outdir=$JOB_OUTDIR "
 	if [ "$MOUNT_RCLONE_VOLUME" = "1" ] ; then
@@ -239,7 +239,6 @@ fi
 ###############################
 # - Define run command & args
 EXE="/opt/Software/caesar/install/scripts/SFinderSubmitter.sh"
-##EXE="/home/$RUNUSER/submitter.sh"
 CMD="runuser -l $RUNUSER -g $RUNUSER -c'""$EXE $JOB_OPTIONS""'"
 
 # - Run job
