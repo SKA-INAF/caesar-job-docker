@@ -89,6 +89,9 @@ RUN adduser --disabled-password --gecos "" $USER && \
     mkdir -p /home/$USER && \
     chown -R $USER:$USER /home/$USER
 
+# - Install python modules
+RUN unset PYTHONPATH && pip3.6 install --upgrade astropy==2.0.16 regions matplotlib shapely
+
 
 ######################################
 ##     INSTALL RCLONE
