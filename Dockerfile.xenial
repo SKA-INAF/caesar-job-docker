@@ -7,6 +7,9 @@ MAINTAINER Simone Riggi "simone.riggi@gmail.com"
 ARG USER_ARG=caesar
 ENV USER $USER_ARG
 
+ARG CHANGE_RUNUSER_ARG=1
+ENV CHANGE_RUNUSER $CHANGE_RUNUSER_ARG
+
 # - CAESAR OPTIONS
 ARG JOB_OPTIONS_ARG=""
 ENV JOB_OPTIONS $JOB_OPTIONS_ARG
@@ -14,50 +17,11 @@ ENV JOB_OPTIONS $JOB_OPTIONS_ARG
 ARG INPUTFILE_ARG=""
 ENV INPUTFILE $INPUTFILE_ARG
 
+ARG JOB_DIR_ARG=""
+ENV JOB_DIR $JOB_DIR_ARG
+
 ARG JOB_OUTDIR_ARG=""
 ENV JOB_OUTDIR $JOB_OUTDIR_ARG
-
-ARG SAVE_REGIONS_ARG=1
-ENV SAVE_REGIONS $SAVE_REGIONS_ARG
-
-ARG SAVE_BKGMAP_ARG=0
-ENV SAVE_BKGMAP $SAVE_BKGMAP_ARG
-
-ARG SAVE_RMSMAP_ARG=0
-ENV SAVE_RMSMAP $SAVE_RMSMAP_ARG
-
-ARG SAVE_ZMAP_ARG=0
-ENV SAVE_ZMAP $SAVE_ZMAP_ARG
-
-ARG GLOBAL_BKG_ARG=0
-ENV GLOBAL_BKG $GLOBAL_BKG_ARG
-
-ARG BKG_ESTIMATOR_ARG=2
-ENV BKG_ESTIMATOR $BKG_ESTIMATOR_ARG
-
-ARG BKG_BOXPIX_ARG=0
-ENV BKG_BOXPIX $BKG_BOXPIX_ARG
-
-ARG BKG_BOX_ARG=20
-ENV BKG_BOX $BKG_BOX_ARG
-
-ARG BKG_GRID_ARG=0.2
-ENV BKG_GRID $BKG_GRID_ARG
-
-ARG NPIX_MIN_ARG=5
-ENV NPIX_MIN $NPIX_MIN_ARG
-
-ARG SEED_THR_ARG=5
-ENV SEED_THR $SEED_THR_ARG
-
-ARG MERGE_THR_ARG=2.5
-ENV MERGE_THR $MERGE_THR_ARG
-
-ARG NITERS_ARG=1
-ENV NITERS $NITERS_ARG
-
-ARG SEED_THR_STEP_ARG=0.5
-ENV SEED_THR_STEP $SEED_THR_STEP_ARG
 
 # - RCLONE OPTIONS
 ARG MOUNT_RCLONE_VOLUME_ARG=0
@@ -116,11 +80,8 @@ RUN echo "PYTHONPATH_BASE=$PYTHONPATH"
 COPY run_job.sh /home/$USER/run_job.sh
 RUN chmod +x /home/$USER/run_job.sh
 
-#COPY submitter.sh /home/$USER/submitter.sh
-#RUN chmod +x /home/$USER/submitter.sh
-
 # - Run container
-CMD ["/home/$USER/run_job.sh --runuser=$USER --jobargs=\"$JOB_OPTIONS\" --inputfile=$INPUTFILE --joboutdir=$JOB_OUTDIR --save-regions=$SAVE_REGIONS --save-bkgmap=$SAVE_BKGMAP --save-rmsmap=$SAVE_RMSMAP --save-significancemap=$SAVE_ZMAP --globalbkg=$GLOBALBKG --bkgestimator=$BKG_ESTIMATOR --bkgboxpix=$BKG_BOXPIX --bkgbox=$BKG_BOX --bkggrid=$BKG_GRID --npixmin=$NPIX_MIN --seedthr=$SEED_THR --mergethr=$MERGE_THR --compactsearchiters=$NITERS --seedthrstep=$SEED_THR_STEP --mount-rclone-volume=$MOUNT_RCLONE_VOLUME --mount-volume-path=$MOUNT_VOLUME_PATH --rclone-remote-storage=$RCLONE_REMOTE_STORAGE --rclone-remote-storage-path=$RCLONE_REMOTE_STORAGE_PATH --rclone-mount-wait=$RCLONE_MOUNT_WAIT_TIME --rclone-copy-wait=$RCLONE_COPY_WAIT_TIME"]
+CMD ["/home/$USER/run_job.sh --runuser=$USER --change-runuser=$CHANGE_RUNUSER --jobargs=\"$JOB_OPTIONS\" --inputfile=$INPUTFILE --jobdir=$JOB_DIR --joboutdir=$JOB_OUTDIR --mount-rclone-volume=$MOUNT_RCLONE_VOLUME --mount-volume-path=$MOUNT_VOLUME_PATH --rclone-remote-storage=$RCLONE_REMOTE_STORAGE --rclone-remote-storage-path=$RCLONE_REMOTE_STORAGE_PATH --rclone-mount-wait=$RCLONE_MOUNT_WAIT_TIME --rclone-copy-wait=$RCLONE_COPY_WAIT_TIME"]
 
 
 #CMD ["sh", "-c", "/home/$USER/run_job.sh --runuser=$USER --jobargs=\"$JOB_OPTIONS\" --inputfile=$INPUTFILE --joboutdir=$JOB_OUTDIR --save-regions=$SAVE_REGIONS --save-bkgmap=$SAVE_BKGMAP --save-rmsmap=$SAVE_RMSMAP --save-significancemap=$SAVE_ZMAP --globalbkg=$GLOBALBKG --bkgestimator=$BKG_ESTIMATOR --bkgboxpix=$BKG_BOXPIX --bkgbox=$BKG_BOX --bkggrid=$BKG_GRID --npixmin=$NPIX_MIN --seedthr=$SEED_THR --mergethr=$MERGE_THR --compactsearchiters=$NITERS --seedthrstep=$SEED_THR_STEP --mount-rclone-volume=$MOUNT_RCLONE_VOLUME --mount-volume-path=$MOUNT_VOLUME_PATH --rclone-remote-storage=$RCLONE_REMOTE_STORAGE --rclone-remote-storage-path=$RCLONE_REMOTE_STORAGE_PATH --rclone-mount-wait=$RCLONE_MOUNT_WAIT_TIME"]

@@ -4,27 +4,13 @@
 ##    PARSE ARGS
 ##########################
 RUNUSER="caesar"
+CHANGE_USER=true
 
 # - CAESAR OPTIONS
+JOB_DIR=""
 JOB_OUTDIR=""
 JOB_ARGS=""
 INPUTFILE=""
-SAVE_REGIONS=""
-SAVE_BKGMAP=""
-SAVE_RMSMAP=""
-SAVE_ZMAP=""
-SAVE_RESMAP=""
-GLOBAL_BKG=""
-BKG_ESTIMATOR=""
-BKG_BOXPIX=""
-BKG_BOX=""
-BKG_GRID=""
-
-NPIX_MIN=""
-SEED_THR=""
-MERGE_THR=""
-NITERS=""
-SEED_THR_STEP=""
 
 # - RCLONE OPTIONS
 MOUNT_RCLONE_VOLUME=0
@@ -42,91 +28,26 @@ do
 		--runuser=*)
     	RUNUSER=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
+		--change-runuser=*)
+    	CHANGE_USER_FLAG=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+			if [ "$CHANGE_USER_FLAG" = "1" ] ; then
+				CHANGE_USER=true
+			else
+				CHANGE_USER=false
+			fi
+    ;;
+		--jobdir=*)
+    	JOB_DIR=`echo "$item" | /bin/sed 's/[-a-zA-Z0-9]*=//'`
+    ;;
 		--joboutdir=*)
     	JOB_OUTDIR=`echo "$item" | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
 		--jobargs=*)
     	JOB_ARGS=`echo "$item" | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			#echo "JOB_ARGS: $JOB_ARGS"
     ;;
 		--inputfile=*)
     	INPUTFILE=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
-		--save-regions=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			if [ "$OPTVAL" = "1" ] ; then
-				SAVE_REGIONS="--save-regions"
-			fi
-    ;;
-		--save-bkgmap=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			if [ "$OPTVAL" = "1" ] ; then
-				SAVE_BKGMAP="--save-bkgmap"
-			fi
-    ;;
-		--save-rmsmap=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			if [ "$OPTVAL" = "1" ] ; then
-				SAVE_RMSMAP="--save-rmsmap"
-			fi
-    ;;
-		--save-significancemap=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			if [ "$OPTVAL" = "1" ] ; then
-				SAVE_ZMAP="--save-significancemap"
-			fi
-    ;;
-		--save-residualmap=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			if [ "$OPTVAL" = "1" ] ; then
-				SAVE_RESMAP="--save-residualmap"
-			fi
-    ;;
-		--globalbkg=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			if [ "$OPTVAL" = "1" ] ; then
-				GLOBALBKG="--globalbkg"
-			fi
-    ;;
-		--bkgestimator=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			BKG_ESTIMATOR="--bkgestimator=$OPTVAL"
-    ;;
-		--bkgboxpix=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			if [ "$OPTVAL" = "1" ] ; then
-				BKG_BOXPIX="--bkgboxpix"
-			fi
-    ;;
-		--bkgbox=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			BKG_BOX="--bkgbox=$OPTVAL"
-    ;;
-		--bkggrid=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			BKG_GRID="--bkggrid=$OPTVAL"
-    ;;
-		--npixmin=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			NPIX_MIN="--npixmin=$OPTVAL"
-    ;;
-		--seedthr=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			SEED_THR="--seedthr=$OPTVAL"
-    ;;
-		--mergethr=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			MERGE_THR="--mergethr=$OPTVAL"
-    ;;
-		--compactsearchiters=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			NITERS="--compactsearchiters=$OPTVAL"
-    ;;
-		--seedthrstep=*)
-    	OPTVAL=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
-			SEED_THR_STEP="--seedthrstep=$OPTVAL"
-    ;;
-
 		--mount-rclone-volume=*)
     	MOUNT_RCLONE_VOLUME=`echo $item | /bin/sed 's/[-a-zA-Z0-9]*=//'`
     ;;
@@ -154,6 +75,14 @@ do
 	esac
 done
 
+
+# - Check options
+if [ "$JOB_ARGS" = "" ]; then
+	if [ "$INPUTFILE" = "" ]; then
+	  echo "ERROR: Empty INPUTFILE argument (hint: you must specify an input file path)!"
+	  exit 1
+	fi
+fi
 
 
 
@@ -205,36 +134,34 @@ if [ "$MOUNT_RCLONE_VOLUME" = "1" ] ; then
 
 fi
 
-# - Copy dummy file to JOB_OUTDIR
-#touch /home/$RUNUSER/README.txt
-#echo "INFO: Copying dummy file to $JOB_OUTDIR ..."
-#cp /home/$RUNUSER/README.txt $JOB_OUTDIR
 
 ###############################
 ##    SET OPTIONS
 ###############################
-DATA_OPTIONS="--inputfile=$INPUTFILE "
-RUN_OPTIONS="--run --no-logredir --jobdir=/home/$RUNUSER/caesar-job --save-summaryplot --save-catalog-to-json "
+# - Set job dir
+if [ "$JOB_DIR" == "" ]; then
+	if [ "$CHANGE_USER" = true ]; then
+		JOB_DIR="/home/$RUNUSER/caesar-job"
+	else
+		JOB_DIR="$HOME/caesar-job"
+	fi
+fi
+
+# - Set options
+DATA_OPTIONS=""
+if [ "$INPUTFILE" != "" ]; then
+	DATA_OPTIONS="--inputfile=$INPUTFILE "
+fi
+
+RUN_OPTIONS="--run --no-logredir --jobdir=$JOB_DIR --save-regions --save-summaryplot --save-catalog-to-json "
 if [ "$JOB_OUTDIR" != "" ]; then
 	RUN_OPTIONS="$RUN_OPTIONS --outdir=$JOB_OUTDIR "
 	if [ "$MOUNT_RCLONE_VOLUME" = "1" ] ; then
 		RUN_OPTIONS="$RUN_OPTIONS --waitcopy --copywaittime=$RCLONE_COPY_WAIT_TIME "
 	fi	
 fi
-SAVE_OPTIONS="$SAVE_REGIONS $SAVE_BKGMAP $SAVE_RMSMAP $SAVE_ZMAP $SAVE_RESMAP "
-BKG_OPTIONS="$GLOBALBKG $BKG_ESTIMATOR $BKG_BOXPIX $BKG_BOX $BKG_GRID "
-SFINDER_OPTIONS="$NPIX_MIN $SEED_THR $MERGE_THR $NITERS $SEED_THR_STEP "
 
-
-if [ "$JOB_ARGS" = "" ]; then
-	if [ "$INPUTFILE" = "" ]; then
-	  echo "ERROR: Empty INPUTFILE argument (hint: you must specify an input file path)!"
-	  exit 1
-	fi
-	JOB_OPTIONS="$RUN_OPTIONS $DATA_OPTIONS $SAVE_OPTIONS $BKG_OPTIONS $SFINDER_OPTIONS "
-else
-	JOB_OPTIONS="$RUN_OPTIONS $JOB_ARGS " 
-fi
+JOB_OPTIONS="$RUN_OPTIONS $DATA_OPTIONS $JOB_ARGS "
 
 
 
@@ -243,7 +170,14 @@ fi
 ###############################
 # - Define run command & args
 EXE="/opt/Software/caesar/install/scripts/SFinderSubmitter.sh"
-CMD="runuser -l $RUNUSER -g $RUNUSER -c'""$EXE $JOB_OPTIONS""'"
+
+
+if [ "$CHANGE_USER" = true ]; then
+	CMD="runuser -l $RUNUSER -g $RUNUSER -c'""$EXE $JOB_OPTIONS""'"
+else
+	CMD="$EXE $JOB_OPTIONS"
+fi
+
 
 # - Run job
 echo "INFO: Running job command: $CMD ..."
