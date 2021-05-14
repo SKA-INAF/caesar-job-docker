@@ -63,6 +63,10 @@ RUN unset PYTHONPATH && pip3.6 install --upgrade astropy==2.0.16 regions matplot
 ######################################
 ##     INSTALL RCLONE
 ######################################
+# - Allow other non-root users to mount fuse volumes
+RUN sed -i "s/#user_allow_other/user_allow_other/" /etc/fuse.conf
+
+# - Install rclone
 RUN curl https://rclone.org/install.sh | bash
 
 ######################################
